@@ -35,7 +35,7 @@ class Player {
       }
       //c.fillRect(this.position.x, this.position.y, this.width, this.height);
    }
-   update() {
+   update(apple) {
       if (this.move === "w") {
          snek.xVelocity = 0;
          snek.yVelocity = -1;
@@ -72,8 +72,30 @@ class Player {
          this.position["column"] = mapSize;
       }
 
+      if (this.position["row"] !== apple.xpos || this.position["column"] !== apple.ypos) {
+         this.trailx.pop();
+         this.traily.pop();
+      }
+
+      for (let x = 0; x < this.trailx.length; x++) {
+         if (this.trailx[x] === this.position["row"] && this.traily[x] === this.position["column"]) {
+            this.reset()
+         }
+      }
+
+
       this.trailx.unshift(this.position["row"]);
       this.traily.unshift(this.position["column"]);
+
+   
+
+      console.log(this.xVelocity,
+         this.yVelocity)
+      console.log(this.trailx , "hi",
+         this.traily, 'other',this.tail,
+         this.move)
+         
+         
    }
 
    reset() {
@@ -98,10 +120,18 @@ class Apple {
    update(snake) {
       if (snake.position["row"] === this.xpos && snake.position["column"] === this.ypos) {
          snake.tail++;
-         while (snake.trailx.includes(this.xpos) && snake.traily.includes(this.ypos)) {
-            this.xpos = Math.floor(Math.random() * mapSize + 1)
-            this.ypos = Math.floor(Math.random() * mapSize + 1)
+
+         for (let x = 0; x < snake.trailx.length; x++) {
+            if (snake.trailx[x] === this.xpos && snake.traily[x] === this.ypos) {
+               x = 0;
+               this.xpos = Math.floor(Math.random() * mapSize + 1)
+               this.ypos = Math.floor(Math.random() * mapSize + 1)
+            }
+            
+            
          }
+            
+         
       }
    }
    draw() {
@@ -130,7 +160,7 @@ function game() {
    c.clearRect(0, 0, canvas.width, canvas.height);
    snek.position.x += snek.xVelocity;
    snek.position.y += snek.yVelocity;
-   snek.update();   
+   snek.update(apple);   
    snek.draw(); 
 
    apple.update(snek);
